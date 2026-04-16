@@ -1,0 +1,29 @@
+# 環境変数（APIキー）- 絶対にアップしない
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# 出力CSVファイル（個人データ含む可能性あり）
+output/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+*.swo

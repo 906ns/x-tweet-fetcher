@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X Tweet Fetcher</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-icon">𝕏</div>
+      <div>
+        <div class="header-title">X Tweet Fetcher</div>
+        <div class="header-sub">ツイート取得・AI分析・自動投稿ツール</div>
+      </div>
+    </header>
+
+    <!-- Step 1: Fetch -->
+    <section class="card">
+      <div class="step-label">Step 1</div>
+      <div class="card-title">ツイート取得</div>
+      <div class="card-desc">ユーザーを指定してツイートを取得するか、既存のCSVを読み込みます</div>
+
+      <!-- API取得 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>ユーザー名</label>
+          <input type="text" id="username" placeholder="@なしでOK（例: elonmusk）">
+        </div>
+        <div class="form-group">
+          <label>取得件数（5〜100）</label>
+          <input type="number" id="user_count" value="100" min="5" max="100">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-primary" id="btn-user" onclick="fetchUser()">ユーザー指定で取得</button>
+        <button class="btn-outline" id="btn-tl" onclick="fetchTimeline()">タイムライン取得</button>
+      </div>
+
+      <!-- CSV読み込み -->
+      <div class="csv-upload-area">
+        <div class="csv-divider"><span>または</span></div>
+        <div class="form-group">
+          <label>取得済みCSVから読み込む</label>
+          <div class="file-input-row">
+            <input type="file" id="csv-file" accept=".csv" onchange="updateFileName()">
+            <label for="csv-file" class="file-label">📂 ファイルを選択</label>
+            <span id="file-name" class="file-name-display">未選択</span>
+            <button class="btn-outline btn-sm" id="btn-upload-csv" onclick="uploadCSV()">CSVを読み込む</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-fetch" class="result-box"></div>
+    </section>
+
+    <!-- Step 2: Analyze -->
+    <section class="card">
+      <div class="step-label">Step 2</div>
+      <div class="card-title">
+        AI分析
+        <span class="badge" id="tweet-count-badge" style="display:none"></span>
+      </div>
+      <div class="card-desc">取得したツイートを Claude が分析し、バズる投稿の法則を解析します</div>
+
+      <div class="btn-group">
+        <button class="btn-purple" id="btn-analyze" onclick="analyzeTweets()" disabled>分析する</button>
+        <button class="btn-cancel" id="btn-cancel-analyze" onclick="cancelAnalyze()" style="display:none">⏹ キャンセル</button>
+      </div>
+
+      <div id="result-analyze" class="result-box"></div>
+    </section>
+
+    <!-- Step 3: Generate & Post -->
+    <section class="card">
+      <div class="step-label">Step 3</div>
+      <div class="card-title">ツイート生成 &amp; 投稿</div>
+      <div class="card-desc">分析結果をもとに Claude がバズりそうなツイート案を3つ生成します</div>
+
+      <div class="form-group">
+        <label>テーマ（任意）</label>
+        <input type="text" id="topic" placeholder="例: プログラミング学習のコツ（空欄なら自動で傾向に合わせて生成）">
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-purple" id="btn-generate" onclick="generateTweet()" disabled>AIで文案を生成</button>
+        <button class="btn-cancel" id="btn-cancel-generate" onclick="cancelGenerate()" style="display:none">⏹ キャンセル</button>
+      </div>
+
+      <div id="result-generate" class="result-box"></div>
+
+      <div id="post-area" class="post-area" style="display:none">
+        <hr class="divider">
+        <div class="form-group">
+          <label>投稿するツイート（編集可能）</label>
+          <textarea id="tweet-text" oninput="updateCharCount()" placeholder="生成された文案をここに貼り付けて編集..."></textarea>
+          <div class="char-count" id="char-count">0 / 280文字</div>
+        </div>
+        <button class="btn-danger btn-sm" id="btn-post" onclick="postTweet()">投稿する</button>
+        <div id="result-post" class="result-box"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  <script>
+    function updateFileName() {
+      const input = document.getElementById('csv-file');
+      const display = document.getElementById('file-name');
+      display.textContent = input.files[0] ? input.files[0].name : '未選択';
+    }
+  </script>
+</body>
+</html>
