@@ -5,6 +5,7 @@
 let fetchedCount = 0;
 
 // AbortController for cancellable requests
+let fetchController = null;
 let analyzeController = null;
 let generateController = null;
 
@@ -90,6 +91,16 @@ function renderFetchResult(elId, result) {
   el.innerHTML = html;
 }
 
+function showFetchCancel(show) {
+  document.getElementById('btn-user').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('btn-tl').style.display = show ? 'none' : 'inline-flex';
+  document.getElementById('btn-cancel-fetch').style.display = show ? 'inline-flex' : 'none';
+}
+
+function cancelFetch() {
+  if (fetchController) fetchController.abort();
+}
+
 async function fetchUser() {
   const username = document.getElementById('username').value.trim();
   const max_results = parseInt(document.getElementById('user_count').value);
@@ -100,23 +111,47 @@ async function fetchUser() {
     return;
   }
 
-  setLoading('btn-user', true, 'ユーザー指定で取得');
+  fetchController = new AbortController();
+  showFetchCancel(true);
   showLoading('result-fetch', 'ツイートを取得しています...');
 
-  const r = await postJSON('/api/fetch_user', { username, max_results });
-  renderFetchResult('result-fetch', r);
-  setLoading('btn-user', false, 'ユーザー指定で取得');
+  try {
+    const r = await postJSON('/api/fetch_user', { username, max_results }, fetchController.signal);
+    renderFetchResult('result-fetch', r);
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      el.innerHTML = `<div class="result-error">⏹ 取得をキャンセルしました</div>`;
+    } else {
+      el.innerHTML = `<div class="result-error">❌ ${escapeHtml(e.message)}</div>`;
+    }
+  } finally {
+    fetchController = null;
+    showFetchCancel(false);
+  }
 }
 
 async function fetchTimeline() {
   const max_results = parseInt(document.getElementById('user_count').value);
 
-  setLoading('btn-tl', true, 'タイムライン取得');
+  fetchController = new AbortController();
+  showFetchCancel(true);
   showLoading('result-fetch', 'タイムラインを取得しています...');
 
-  const r = await postJSON('/api/fetch_timeline', { max_results });
-  renderFetchResult('result-fetch', r);
-  setLoading('btn-tl', false, 'タイムライン取得');
+  try {
+    const r = await postJSON('/api/fetch_timeline', { max_results }, fetchController.signal);
+    renderFetchResult('result-fetch', r);
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      document.getElementById('result-fetch').innerHTML =
+        `<div class="result-error">⏹ 取得をキャンセルしました</div>`;
+    } else {
+      document.getElementById('result-fetch').innerHTML =
+        `<div class="result-error">❌ ${escapeHtml(e.message)}</div>`;
+    }
+  } finally {
+    fetchController = null;
+    showFetchCancel(false);
+  }
 }
 
 // --- CSV Upload ---
