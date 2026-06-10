@@ -43,6 +43,13 @@ python app.py
 
 ブラウザで http://127.0.0.1:5000 を開く。
 
+## テスト
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
 ## 注意事項
 
 - **X API Basicプラン以上が必要**（Freeではツイート取得不可）
@@ -58,6 +65,7 @@ x-tweet-fetcher/
 ├── x_api.py            # X API 連携（取得）
 ├── tweet_poster.py     # X API 連携（投稿）
 ├── ai_analyzer.py      # Claude APIによる分析・文案生成
+├── tests/              # pytest（ユニットテスト）
 ├── templates/index.html
 ├── static/             # CSS / JS
 ├── output/             # CSV出力先
