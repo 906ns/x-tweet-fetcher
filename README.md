@@ -1,12 +1,23 @@
-# X ツイート取得ツール
+# X ツイート取得・AI分析ツール
 
-X API v2 を使ってツイートを取得し、CSV出力するシンプルなWebツール。
+X API v2 でツイートを取得し、Claude APIで傾向分析・投稿文案の生成まで行うWebツール。
 
 ## 機能
 
 - 指定ユーザーのツイートを取得（最大100件）
 - 自分のホームタイムラインを取得（最大100件）
 - CSV出力（投稿内容/日時/いいね数/RT数/アカウント名/インプレッション数）
+- **AI分析（Claude API）**: 取得したツイートの傾向・エンゲージメント分析、バズる投稿の共通要素の抽出
+- **投稿文案の生成（Claude API)**: 分析結果をもとに、指定テーマの投稿文案を生成
+- ツイート投稿（X API経由）
+
+## 技術スタック
+
+| 領域 | 技術 |
+|---|---|
+| バックエンド | Python / Flask |
+| 外部API | X API v2 / Claude API（Anthropic） |
+| フロントエンド | Jinja2 + Vanilla JS |
 
 ## セットアップ
 
@@ -14,8 +25,15 @@ X API v2 を使ってツイートを取得し、CSV出力するシンプルなWe
 cd x-tweet-fetcher
 pip install -r requirements.txt
 cp .env.example .env
-# .env を編集して X_BEARER_TOKEN を設定
 ```
+
+`.env` に以下を設定:
+
+| 変数 | 用途 | 取得先 |
+|---|---|---|
+| `X_BEARER_TOKEN` | ツイート取得 | https://developer.x.com |
+| `ANTHROPIC_API_KEY` | AI分析・文案生成 | https://console.anthropic.com/settings/keys |
+| `CLAUDE_MODEL` | 使用モデルの指定（任意、省略時はデフォルト） | - |
 
 ## 起動
 
@@ -36,9 +54,12 @@ python app.py
 
 ```
 x-tweet-fetcher/
-├── app.py              # Flaskサーバー
-├── x_api.py            # X API 連携
+├── app.py              # Flaskサーバー・ルーティング
+├── x_api.py            # X API 連携（取得）
+├── tweet_poster.py     # X API 連携（投稿）
+├── ai_analyzer.py      # Claude APIによる分析・文案生成
 ├── templates/index.html
+├── static/             # CSS / JS
 ├── output/             # CSV出力先
 ├── .env.example
 └── requirements.txt
