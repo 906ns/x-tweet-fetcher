@@ -2,6 +2,7 @@
 import os
 import anthropic
 
+CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-4-6")
 
 class AIError(Exception):
     pass
@@ -45,7 +46,7 @@ def analyze_tweets(tweets: list[dict]) -> str:
     try:
         result_text = ""
         with client.messages.stream(
-            model="claude-opus-4-6",
+            model=CLAUDE_MODEL,
             max_tokens=4096,
             thinking={"type": "adaptive"},
             messages=[{"role": "user", "content": prompt}],
@@ -102,7 +103,7 @@ def generate_tweet(tweets: list[dict], topic: str = "") -> str:
     try:
         result_text = ""
         with client.messages.stream(
-            model="claude-opus-4-6",
+            model=CLAUDE_MODEL,
             max_tokens=2048,
             thinking={"type": "adaptive"},
             messages=[{"role": "user", "content": prompt}],
