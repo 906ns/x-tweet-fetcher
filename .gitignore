@@ -27,3 +27,9 @@ output/
 .idea/
 *.swp
 *.swo
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+docs/

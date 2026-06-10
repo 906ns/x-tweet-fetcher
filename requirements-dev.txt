@@ -1,0 +1,6 @@
+# 開発・テスト用の依存パッケージ
+# 本番には不要なので requirements.txt から分離
+
+-r requirements.txt
+
+pytest>=8.0.0
