@@ -1,6 +1,7 @@
 """X ツイート投稿モジュール (OAuth 1.0a)"""
 import os
 import json
+import unicodedata 
 import requests
 from requests_oauthlib import OAuth1
 
@@ -8,6 +9,17 @@ from requests_oauthlib import OAuth1
 class PostError(Exception):
     pass
 
+
+# ↓ ここに新しい関数を追加
+def count_tweet_length(text: str) -> int:
+    """Xのカウントルール（全角2・半角1）で文字数を数える"""
+    count = 0
+    for char in text:
+        if unicodedata.east_asian_width(char) == 'W' or unicodedata.east_asian_width(char) == 'F':
+            count += 2
+        else:
+            count += 1
+    return count
 
 def _get_auth() -> OAuth1:
     api_key = os.getenv("X_API_KEY")
@@ -32,9 +44,9 @@ def post_tweet(text: str) -> dict:
         raise PostError("投稿するテキストが空です")
 
     text = text.strip()
-    if len(text) > 280:
-        raise PostError(f"ツイートが280文字を超えています ({len(text)}文字)")
-
+    if count_tweet_length(text) > 280:
+        raise PostError(f"ツイートが280文字を超えています ({count_tweet_length(text)}カウント)")
+    
     url = "https://api.twitter.com/2/tweets"
     auth = _get_auth()
 
