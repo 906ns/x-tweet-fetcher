@@ -7,9 +7,8 @@ X API v2 でツイートを取得し、Claude APIで傾向分析・投稿文案�
 - 指定ユーザーのツイートを取得（最大100件）
 - 自分のホームタイムラインを取得（最大100件）
 - CSV出力（投稿内容/日時/いいね数/RT数/アカウント名/インプレッション数）
-- **AI分析（Claude API）**: 取得したツイートの傾向・エンゲージメント分析、バズる投稿の共通要素の抽出
-- **投稿文案の生成（Claude API)**: 分析結果をもとに、指定テーマの投稿文案を生成
-- ツイート投稿（X API経由）
+- Claude APIによるツイート内容の分析（感情・トピック抽出）
+- AI生成テキストを使ったツイート投稿
 
 ## 技術スタック
 
@@ -59,16 +58,13 @@ python -m pytest
 
 ## ファイル構成
 
-```
 x-tweet-fetcher/
-├── app.py              # Flaskサーバー・ルーティング
-├── x_api.py            # X API 連携（取得）
-├── tweet_poster.py     # X API 連携（投稿）
-├── ai_analyzer.py      # Claude APIによる分析・文案生成
-├── tests/              # pytest（ユニットテスト）
+├── app.py              # Flaskサーバー
+├── x_api.py            # X API 連携
+├── ai_analyzer.py      # Claude APIによるツイート分析
+├── tweet_poster.py     # ツイート投稿機能
 ├── templates/index.html
-├── static/             # CSS / JS
+├── static/             # CSS/JS
 ├── output/             # CSV出力先
 ├── .env.example
 └── requirements.txt
-```
